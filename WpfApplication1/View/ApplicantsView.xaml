@@ -1,0 +1,88 @@
+﻿<Window x:Class="WpfApplication1.View.ApplicantsView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="clr-namespace:WpfApplication1.View"
+        Title="Кандидаты" Height="350" Width="525">
+  <Window.Resources>
+    <Style x:Key="DataGridTextBlockStyle" TargetType="{x:Type TextBlock}">
+      <Setter Property="TextAlignment" Value="Right"></Setter>
+    </Style>
+    
+    <Style x:Key="DataGridStyle" TargetType="{x:Type DataGrid}">
+      <Setter Property="Background" Value="#E5E4F1"/>
+      <Setter Property="HeadersVisibility" Value="All"/>
+      <Setter Property="AlternationCount" Value="2"/>
+      <Setter Property="GridLinesVisibility" Value="Vertical"/>
+      <Setter Property="SelectionMode" Value="Single"/>
+      <Setter Property="ClipboardCopyMode" Value="IncludeHeader"/>
+      <Setter Property="VerticalGridLinesBrush" Value="#b6d7e5"/>
+      <Setter Property="SelectionUnit" Value="FullRow"/>
+    </Style>
+    
+    <Style x:Key="DataGridRowStyle" TargetType="{x:Type DataGridRow}">
+      <Setter Property="Margin" Value="0,1,0,1"/>
+      <Style.Triggers>
+        <Trigger Property="AlternationIndex" Value="0">
+          <Setter Property="Background" Value="White"/>
+        </Trigger>
+        <Trigger Property="AlternationIndex" Value="1">
+          <Setter Property="Background" Value="#EFEFF3"/>
+        </Trigger>
+        <Trigger Property="Validation.HasError" Value="True">
+          <Setter Property="Background" Value="MistyRose"/>
+          <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </Window.Resources>
+  
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="35" />
+      <RowDefinition Height="45" />
+      <RowDefinition Height="*" />
+      <RowDefinition Height="25" />
+    </Grid.RowDefinitions>
+
+    <StackPanel Orientation="Horizontal" Margin="5,2,5,2" >
+      <Button Content="Загрузить" ToolTip="Выбрать CSV файл и загрузить его в базу" Command="{Binding ImportCommand}" Width="100" Margin="2,0"/>
+      <Button Content="Очистить" ToolTip="Удалить все данные из базы" Command="{Binding ClearCommand}" Width="80" Margin="2,0" />
+      <Button Content="Добавить" ToolTip="Задать параметры и добавить нового кандидата в базу" Command="{Binding AddCommand}" Width="80" Margin="2,0" />
+      <Button Content="Удалить" ToolTip="Удалить выбранного кандидата из базы" Command="{Binding DeleteCommand}" Width="80" Margin="2,0" />
+      <Button Content="Экспорт" ToolTip="Экспортировать данные в файл" Command="{Binding ExportCommand}" Width="80" Margin="2,0" />
+    </StackPanel>
+    <TextBlock Grid.Row="1" Margin="5,2,5,2" TextWrapping="Wrap"
+               Text="Сортировка включается щелчком по заголовку столбца, если с нажатым Shift, то по нескольким столбцам"/>
+
+    <DataGrid Name="ApplicantsGrid"  Grid.Row="2" AutoGenerateColumns="False" CanUserDeleteRows="False" CanUserAddRows="False" 
+              ItemsSource="{Binding Applicants}" SelectedItem="{Binding Current}" 
+              Style="{StaticResource DataGridStyle}"
+              RowStyle="{StaticResource DataGridRowStyle}"
+              >
+      <DataGrid.Columns>
+        <DataGridTextColumn Header="Id" Binding="{Binding Path=ApplicantId}"  IsReadOnly="True" Visibility="Hidden"/>
+        <DataGridTextColumn Header="ФИО" Binding="{Binding Path=Name, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" />
+        <DataGridTextColumn Header="Дата рождения" Binding="{Binding Path=BirthDay, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                            ElementStyle="{StaticResource DataGridTextBlockStyle}" />
+        <DataGridTextColumn Header="EMail" Binding="{Binding Path=EMail, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" />
+        <DataGridTextColumn Header="Телефон" Binding="{Binding Path=Phone, UpdateSourceTrigger=PropertyChanged, ValidatesOnExceptions=True}" 
+                            ElementStyle="{StaticResource DataGridTextBlockStyle}" />
+      </DataGrid.Columns>
+      
+      <DataGrid.RowValidationRules>
+        <view:ApplicantValidationRule ValidationStep="RawProposedValue" />
+      </DataGrid.RowValidationRules>
+
+      <DataGrid.RowValidationErrorTemplate>
+        <ControlTemplate>
+          <Grid ToolTip="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type DataGridRow}}, Path=(Validation.Errors)[0].ErrorContent}">
+            <Ellipse StrokeThickness="0" Fill="Red" Width="{TemplateBinding FontSize}" Height="{TemplateBinding FontSize}" />
+            <TextBlock Text="!" FontSize="{TemplateBinding FontSize}" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center" />
+          </Grid>
+        </ControlTemplate>
+      </DataGrid.RowValidationErrorTemplate>
+    </DataGrid>
+
+    <ProgressBar Name="Progress" Grid.Row="3" Height="12" IsIndeterminate="True" Visibility="Hidden"/>
+  </Grid>
+</Window>
