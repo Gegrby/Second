@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Threading.Tasks;
 using Applicants.Core;
 using LinqToDB;
 using LinqToDB.Mapping;
 
-//using System.ComponentModel.DataAnnotations;
 
 namespace WpfApplication1.Model {
   [DebuggerDisplay("{Name} {BirthDay} {EMail} {Phone} {ApplicantId}")]
@@ -28,7 +26,6 @@ namespace WpfApplication1.Model {
       }
     }
 
-    //[MaxLength( 256 )]
     [Column(Length = 256)]
     public string Name {
       get { return _name; }
@@ -40,7 +37,6 @@ namespace WpfApplication1.Model {
       }
     }
 
-    //[MaxLength( 100 )]
     [Column(Length = 100)]
     public string BirthDay {
       get { return _birthDay; }
@@ -52,7 +48,6 @@ namespace WpfApplication1.Model {
       }
     }
 
-    //[MaxLength( 256 )]
     [Column(Length = 256)]
     public string EMail {
       get { return _eMail; }
@@ -64,7 +59,6 @@ namespace WpfApplication1.Model {
       }
     }
 
-    //[MaxLength( 100 )]
     [Column(Length = 100)]
     public string Phone {
       get { return _phone; }
